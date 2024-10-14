@@ -20,14 +20,14 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
 
     // Retrofit for network calls
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     // Coil for image loading
     implementation("io.coil-kt:coil-compose:2.4.0")
 
     // ExoPlayer for video playback
-    implementation 'com.google.android.exoplayer:exoplayer:2.18.5'
+    implementation("com.google.android.exoplayer:exoplayer:2.18.5")
 
     // Coroutine for async tasks
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
@@ -213,12 +213,22 @@ fun RepoGalleryScreen(viewModel: RepoViewModel) {
 In your `MainActivity.kt` file, set up the ViewModel and call the `RepoGalleryScreen` to show the images and videos.
 
 ```kotlin
+package com.example.instasexies
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.instasexies.ui.theme.InstaSexiesTheme
 
 class MainActivity : ComponentActivity() {
     private val viewModel: RepoViewModel by viewModels()
@@ -226,21 +236,45 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
-                Surface {
-                    RepoGalleryScreen(viewModel)
+            InstaSexiesTheme {
+                Scaffold { paddingValues ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        RepoGalleryScreen(viewModel)
+                    }
                 }
             }
         }
 
         // Fetch the contents from the GitHub repository
         viewModel.fetchRepoContents(
-            owner = "YourGitHubUsername", // Change this
-            repo = "YourRepoName",        // Change this
-            path = "path/to/media"        // Change this if necessary
+            owner = "gitporn69",   // Change this
+            repo = "instaserver",  // Change this
+            path = "path/to/media" // Change this if necessary
         )
     }
 }
+
+@Composable
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    InstaSexiesTheme {
+        Greeting("Android")
+    }
+}
+
 ```
 
 ---
@@ -255,4 +289,125 @@ class MainActivity : ComponentActivity() {
 - **Error Handling**: You can extend the app to handle API errors, network failures, or loading states (e.g., showing a loading spinner while the data is fetched).
 - **Video Caching**: Consider adding video caching for better performance.
 
-Let me know if you need any additional details or help setting up your project!
+### Extra Debugging:
+
+Your `MainActivity.kt` file looks mostly good, but there are a few things to review or improve. Here's a breakdown:
+
+### 1. **Material Theme Usage**
+You're mixing **MaterialTheme** from **Material 2** with **Material 3** (you imported both in `MainActivity`). Since you're likely using Jetpack Compose Material 3, it would be better to use `MaterialTheme` from the Material 3 library instead.
+
+### 2. **Internet Permission**
+Make sure you have added internet permission in your `AndroidManifest.xml`. Without this, the app won't be able to fetch data from the GitHub repository.
+
+```xml
+<uses-permission android:name="android.permission.INTERNET"/>
+```
+
+### 3. **Fetching Content from GitHub**:
+In `onCreate`, you're calling `viewModel.fetchRepoContents(...)` right after setting the content. This is fine, but ensure that the ViewModel and the GitHub API fetching mechanism are correctly implemented and that they handle potential exceptions, like network errors.
+
+### 4. **Jetpack Compose Scaffold (Optional Enhancement)**
+It might be useful to wrap your content in a `Scaffold` if you plan to add things like top bars or floating action buttons. Here's an updated version of your `MainActivity` with `Scaffold` and `Material 3` improvements:
+
+### Revised `MainActivity.kt`
+
+```kotlin
+package com.example.instasexies
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.instasexies.ui.theme.InstaSexiesTheme
+
+class MainActivity : ComponentActivity() {
+    private val viewModel: RepoViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            InstaSexiesTheme {
+                Scaffold { paddingValues ->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        RepoGalleryScreen(viewModel)
+                    }
+                }
+            }
+        }
+
+        // Fetch the contents from the GitHub repository
+        viewModel.fetchRepoContents(
+            owner = "gitporn69",   // Change this
+            repo = "instaserver",  // Change this
+            path = "path/to/media" // Change this if necessary
+        )
+    }
+}
+
+@Composable
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    InstaSexiesTheme {
+        Greeting("Android")
+    }
+}
+```
+
+### Changes Made:
+1. **Material 3 Setup**: `MaterialTheme` and `Surface` are now using Material 3 (as per `MaterialTheme.colorScheme`).
+2. **Scaffold Added**: The `Scaffold` component is added, which provides padding for the content and is useful for future UI additions like toolbars or bottom navigation.
+3. **Surface Background Color**: The background is set to the Material 3 theme background color using `MaterialTheme.colorScheme.background`.
+
+### 5. **Troubleshooting: Check the ViewModel**
+
+Make sure your `RepoViewModel` is correctly implemented and handles the following:
+- **Coroutines for network calls** (no blocking of the main thread).
+- **Error handling** (e.g., if the network request fails).
+- **LiveData/StateFlow** to observe changes and update the UI reactively.
+
+### 6. **Error Handling in the ViewModel**
+If your GitHub API calls fail, your app might crash or render nothing. Ensure you're catching exceptions and showing some error UI in case of a failure.
+
+For example, inside your `RepoViewModel`, handle exceptions:
+
+```kotlin
+fun fetchRepoContents(owner: String, repo: String, path: String) {
+    viewModelScope.launch {
+        try {
+            val response = apiService.getRepoContents(owner, repo, path)
+            _repoFiles.value = response
+        } catch (e: Exception) {
+            _errorState.value = true
+            // Log or handle the error
+        }
+    }
+}
+```
+
+You could then update your UI based on `_errorState` to show a message when an error occurs.
+
+---
+
+Let me know if the updated `MainActivity.kt` works for you or if the app is still crashing!
