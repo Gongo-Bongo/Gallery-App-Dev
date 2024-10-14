@@ -1,5 +1,5 @@
 // Paste the link of your mark down file here to render it into your site
-const myMarkDownFile="https://raw.githubusercontent.com/Gongo-Bongo/C-cheatsheet/refs/heads/main/C-cheatsheet.md"
+const myMarkDownFile="https://raw.githubusercontent.com/Gongo-Bongo/Gallery-App-Dev/refs/heads/main/main.md"
 
 // Fetch the Markdown file and render it
 async function getmd() {
