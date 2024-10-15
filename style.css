@@ -320,6 +320,7 @@ code:not([class*="language-"]) {
 }
 
 .copy-button {
+    height:fit-content;
     position: sticky;
     top: 0px;
     right: 0px;
